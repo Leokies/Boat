@@ -1,20 +1,34 @@
 # Boat
 ### In this project I show you how sata analysis helped me to find my dream sailboat.
 
+- [ASK](#ASK)
+	- [Anaysis task](#Anaysis_task)
+	- [Establish_metrics](#Establish_metrics)
+- [Prepare](#Prepare)	
+- [Process](#Process)
+- [Analysis](#Analysis)
+ 	- [Python](#Python)
+
+
+
+<a name="ASK"></a>
 ## ASK phase:
 
+<a name="Anaysis_task"></a>
 ### Anaysis task:
 Find a sailboat that is suitable to live on, is ocean capable and fits in my budget.
 As a student, I have a limited budget. Therefore, the main consideration will be the price of the boat. My budget is 30000 €.
 From my own sailing experience I am looking for a minimum boat length of 9 meters. This is the smallest size I can live with comfortably on the boat with my girlfriend and feel comfortable even on long ocean passages.
 
+<a name="Establish_metrics"></a>
 ### Establish metrics:
 -Investigation if there is a correlation between the price and boat length, boat width , year of construction?
 
 -Which countries have the most boats whith a suitble price and budget boat length? 
 
+<a name="Prepare"></a>
 ## Prepare phase:
-We Download the boat_sales dataset from Kaggle and import it to SQL.
+We Download the [boat_sales](https://www.kaggle.com/datasets/karthikbhandary2/boat-sales) dataset from [Kaggle](https://www.kaggle.com/datasets/karthikbhandary2/boat-sales) and import it to SQL.
 
 
 ![image](https://user-images.githubusercontent.com/94685505/224360118-23534327-21d6-4048-81cb-f86b9d7cf23a.png)
@@ -48,7 +62,7 @@ SELECT Price as price,
 	[Location] as loc
 FROM boat_raw
 ```
-
+<a name="Process"></a>
 ## Process phase
 
 Now let's take a closer look at the data to detect irregularities and errors.
@@ -155,11 +169,12 @@ Final table:
 
 ![image](https://user-images.githubusercontent.com/94685505/224407357-7b209e58-9914-4f44-822c-b53625b29825.png)
 
-
+<a name="Analysis"></a>
 ## Analysis phase
 
 Finally we can start analyzing our dataset. 
 
+<a name="Python"></a>
 ### Python
 
 Our first task is to identify the main factors which influence the price. 
@@ -201,7 +216,45 @@ print(counts_by_country)
 ```
 ![image](https://user-images.githubusercontent.com/94685505/224407546-ee7d26b4-d07b-425d-9130-07bd0eec7bf6.png)
 
-Finally, we would like to present this information as a map.
+
+
+
+
+Finally, we would like to present this information in a pie chart.
+```
+import matplotlib.pyplot as plt
+
+filtered_data = df[(df['price_euro'] <= 30000) & (df['boat_length'] >= 9) & (df['boat_length'] <= 11)]
+
+counts_by_country = filtered_data.groupby('loc')['price_euro'].count()
+
+fig, ax = plt.subplots(figsize=(8, 8))
+
+ax.pie(counts_by_country.values, labels=counts_by_country.index, autopct='%1.1f%%', startangle=90)
+
+ax.set_title('Boats by Country')
+
+plt.show()
+```
+
+
+
+
+
+
+![image](https://user-images.githubusercontent.com/94685505/224429020-65ca0a78-1639-4ae9-9cf2-a94d31f91cda.png)
+
+
+
+
+
+### With this information I have made myself on the search for Italy. Three months later I actually found my dream sailboat in Rome......
+
+
+
+
+![WhatsApp Image 2023-03-10 at 20 07 23](https://user-images.githubusercontent.com/94685505/224429581-d737d896-8f5a-4705-8465-5ae1d36cf650.jpeg)
+
 
 
 
