@@ -11,7 +11,7 @@ From my own sailing experience I am looking for a minimum boat length of 9 meter
 ### Establish metrics:
 -Investigation if there is a correlation between the price and boat length, boat width , year of construction?
 
--Which countries have a large percentage of boats in my budget and my boat length? 
+-Which countries have the most boats whith a suitble price and budget boat length? 
 
 ## Prepare phase:
 We Download the boat_sales dataset from Kaggle and import it to SQL.
@@ -125,11 +125,36 @@ The `NULLIF` function is used to return NULL if `CHARINDEX('?', loc)` returns 0.
 
 So if `CHARINDEX('?', loc)` returns a value greater than 0, the `NULLIF` function returns this value minus 1. Otherwise, it returns NULL, which causes the `LEFT` function to return NULL as well.
 
-Great now our dataset looks good. It is clear and contains the information we need and has the right data type. We are ready for the analysis.
+Great now our dataset looks good. It is clear and contains the information we need and has the right data type. We are ready for the analysis. 
+
+The only thing we are still missing are coordinates for our country so that we can later display our results as a map. 
+For this we load a dataset with countries and their coordinates. Then we join the two datasets with a LEFT OUTER JOIN.
+
+```
+SELECT condition,built,boat_length,boat_width,material,loc,price_euro, latitude,longitude
+FROM Portfolio.dbo.boat_data
+LEFT OUTER JOIN Portfolio.dbo.countries_lat_lon
+	ON boat_data.loc = countries_lat_lon.name
+```
+Now we add `latitude` and `longitude` to the boat_data table.
+
+```
+ALTER TABLE Portfolio.dbo.boat_data
+ADD latitude FLOAT,
+    longitude FLOAT;
+```
+```
+UPDATE Portfolio.dbo.boat_data
+SET latitude = countries_lat_lon.latitude,
+    longitude = countries_lat_lon.longitude
+FROM Portfolio.dbo.countries_lat_lon
+WHERE boat_data.loc = countries_lat_lon.name;
+```
 
 Final table: 
 
-![image](https://user-images.githubusercontent.com/94685505/224369990-5a307440-6f5b-49e5-807c-c316993d1c44.png)
+![image](https://user-images.githubusercontent.com/94685505/224407357-7b209e58-9914-4f44-822c-b53625b29825.png)
+
 
 ## Analysis phase
 
@@ -159,15 +184,33 @@ The matrix shows a moderate to strong correlation between `price` and `boat leng
 
 We can conclude that the price is especially related to the boot length. 
 
-This allows us to refine our boot search further.Since we have to pay special attention to our budget, it is advisable to consider small boats. So we are looking for boats around 9m to maximum 10m.
+This allows us to refine our boot search further.Since we have to pay special attention to our budget, it is advisable to consider small boats. So we are looking for boats around 9m to maximum 11m.
 
-### Tableau
 
-To make our boat search interactive and to visualize our results we used Tableau.
+Ok now let's see which country has the most suitable boats for us. We are looking for boats that cost 30000 euros or less and are between 9 and 11 meters long.
+```
+import pandas as pd
 
-First we join our dataset boat_data with country coordinates to visualize them later as a map. We achieve the linkage by a LEFT INNER JOIN 
+# filter the data to keep boats with price less than 30000 and length between 9 and 10 meters
+filtered_data = df[(df['price_euro'] < 30000) & (df['boat_length'] >= 9) & (df['boat_length'] <= 11)]
 
-![image](https://user-images.githubusercontent.com/94685505/224379987-d8078baa-41a5-4f5e-9075-07ed56b94a85.png)
+# group the filtered data by country and count the number of boats in each group
+counts_by_country = filtered_data.groupby('loc')['price_euro'].count()
+
+print(counts_by_country)
+```
+![image](https://user-images.githubusercontent.com/94685505/224407546-ee7d26b4-d07b-425d-9130-07bd0eec7bf6.png)
+
+Finally, we would like to present this information as a map.
+
+
+
+
+
+
+
+
+
 
 
 
