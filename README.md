@@ -1,5 +1,5 @@
 # Boat
-### In this project I show you how sata analysis helped me to find my dream sailboat.
+### In this project I show you how data analysis helped me to find my dream sailboat.
 
 - [ASK](#ASK)
 	- [Anaysis task](#Anaysis_task)
